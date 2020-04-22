@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const uniqueValidator = require('mongoose-unique-validator');
 require('dotenv').config();
 
 const photoSchema = new Schema({
@@ -10,14 +11,15 @@ const photoSchema = new Schema({
 
 const albumSchema = new Schema ({
   album: [photoSchema],
-  name: {type: String, required: true}
+  name: {type: String, required: true, unique: true}
 });
 
+albumSchema.plugin(uniqueValidator);
 const Name = mongoose.model('Album', albumSchema);
 
 const config = {
   useNewUrlParser: true,
-  useUnifiedTopology: true  
+  useUnifiedTopology: true
 };
 
 // Initial database connection
@@ -27,48 +29,42 @@ mongoose.connect(process.env.MONGO_CONNECT, config).catch(error => {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
 
-async function albumExists(albumName, data) {
-  await Name.find({name: albumName}, (err, entry) => {
-    if (err) {
-	  throw err;
-	}
-
-	// For testing purposes
-	// console.log(entry);
-
-    if (entry.length === 0) {
-      data.save(function (err) {
-	    if (err) {
-	      return;
-        }
-        console.log("Album saved.");
-	  });
-	} else {
-		console.log("Album already exists!");
-	}
-  });
-}
-
-async function getAlbum(albumName) {
-  const result = await Name.find({name: albumName}, (err, entry) => {
+//async function albumExists(albumName, data) {
+async function albumExists(albumName) {
+  return await Name.find({name: albumName}, (err, entry) => {
     if (err) {
 	  throw err;
 	}
 
 	return entry;
   });
+}
 
-  return result;
+async function getAlbum(albumName) {
+  return await Name.find({name: albumName}, (err, entry) => {
+    if (err) {
+	  throw err;
+	}
+
+	return entry;
+  });
 }
 
 async function createAlbum(albumName) {
-	const data = Name({
-      album: [],
-	  name: albumName
-	});
+  const data = Name({
+    album: [],
+	name: albumName
+  });
 
-	console.log("Hitting album exists");
-    await albumExists(albumName, data);
+  await data.save(function (err) {
+    if (err) {
+	  return;
+    }
+
+    console.log("Album saved.");
+  });
+
+  return await getAlbum(albumName);
 }
 
 async function deleteAlbum(albumName) {

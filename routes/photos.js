@@ -39,29 +39,43 @@ const admins = [
   process.env.ADMIN_FOUR
 ];
 
-let handleCreateAlbum = function(req, res) {
-    verifyToken(req).then(ticket => {
-		//console.log("ticket: " + ticket.payload['email']);
-		const email = ticket.payload['email'];
+function handleCreateAlbum(req, res) {
+  verifyToken(req).then(ticket => {
+    //console.log("ticket: " + ticket.payload['email']);
+    const email = ticket.payload['email'];
 
-		if (!admins.includes(email)) {
-			res.status(403).end();
-			return;
-		}
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
 
-		console.log("Calling create album");
-		database.createAlbum(req.body.albumName);
+	let result = database.createAlbum(req.body.albumName).then(resolve => {
+	  console.log(resolve.length);
+	  if (resolve.length === 1) {
+	    console.log("hello");
+	    return false;
+	  }
+	}, err => {
+	  console.log(err);
+	});
 
+	result.then(resolve => {
+      if (resolve === false) {
+	    res.status(403).end();
+	  } else {
 		res.status(200).end();
-    }, error => {
-        console.log(error);
-		res.status(400).end();
-    });
+	  }
+	}, err => {
+	  console.log(err);	
+	});
+  }, error => {
+    console.log(error);
+	res.status(400).end();
+  });
 }
 
 router.post('/createAlbum', function (req, res) {
 	handleCreateAlbum(req, res);
-	//res.status(200).end();
 });
 
 router.post('/deleteAlbum', function (req, res) {

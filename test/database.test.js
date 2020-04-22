@@ -16,19 +16,15 @@ describe('Database Tests', () => {
 
 	it('should successfully add a new album to the database', done => {
 	  database.createAlbum("Memories").then(resolve => {
-		done();
-	  });
+	    done();
+      });
 	});
 
-	it('should not add duplicate album(s) to the database', done => {
-	  database.createAlbum("Memories");
+	it('should not add duplicate album(s) to the database', async() => {
+	  // Builds off of the previous test
+	  await database.createAlbum("Memories");
 
-	  database.getAlbum("Memories").then(resolve => {
-		if (resolve.length !== 1) {
-		  done(new Error("Duplicate occurred!"));
-		} else {
-		  done();
-		}
-	  });
+	  let result = await database.getAlbum("Memories");
+	  assert.equal(result.length, 1);
 	});
 });
