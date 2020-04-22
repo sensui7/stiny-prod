@@ -42,14 +42,13 @@ async function handleCreateAlbum(req, res) {
 }
 
 async function handleAddPhoto(req, res) {
-  return verifyToken(req).then(ticket => {
+  verifyToken(req).then(ticket => {
     const email = ticket.payload['email'];
 
     if (!admins.includes(email)) {
 	  res.status(403).end();
 	  return;
 	}
-
   }, error => {
     console.log(error);
 	res.status(400).end();
