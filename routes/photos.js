@@ -49,6 +49,7 @@ let handleCreateAlbum = function(req, res) {
 			return;
 		}
 
+		console.log("Calling create album");
 		database.createAlbum(req.body.albumName);
 
 		res.status(200).end();

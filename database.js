@@ -64,6 +64,7 @@ async function createAlbum(albumName) {
 	  name: albumName
 	});
 
+	console.log("Hitting album exists");
     await albumExists(albumName, data);
 }
 
