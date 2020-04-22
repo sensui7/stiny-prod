@@ -6,7 +6,6 @@ var logger = require('morgan');
 const fs = require('fs');
 var cloudinary = require('cloudinary').v2
 require('dotenv').config();
-var database = require('./database');
 
 var photosRouter = require('./routes/photos');
 

@@ -1,81 +1,9 @@
-var express = require('express');
-var router = express.Router();
-const database = require('../database');
-require('dotenv').config();
-
-let verifyToken = function (req) {
-    const {OAuth2Client} = require('google-auth-library');
-    const client = new OAuth2Client(process.env.CLIENT_ID);
-
-    async function verify() {
-        const ticket = await client.verifyIdToken({
-            idToken: req.body.idtoken,
-            // CLIENT_ID that accesses backend
-            audience: process.env.CLIENT_ID,
-        });
-
-      const payload = ticket.getPayload();
-      const userid = payload['sub'];
-
-      return ticket;
-    }
-
-	/*
-    verify().then(ticket => {
-        console.log(ticket);
-    }, error => {
-        console.log(error);
-    });
-	*/
-
-	// Return promise instead of handling promise as above
-	return verify();
-};
-
-const admins = [
-  process.env.ADMIN_ONE,
-  process.env.ADMIN_TWO,
-  process.env.ADMIN_THREE,
-  process.env.ADMIN_FOUR
-];
-
-function handleCreateAlbum(req, res) {
-  verifyToken(req).then(ticket => {
-    //console.log("ticket: " + ticket.payload['email']);
-    const email = ticket.payload['email'];
-
-    if (!admins.includes(email)) {
-	  res.status(403).end();
-	  return;
-	}
-
-	let result = database.createAlbum(req.body.albumName).then(resolve => {
-	  console.log(resolve.length);
-	  if (resolve.length === 1) {
-	    console.log("hello");
-	    return false;
-	  }
-	}, err => {
-	  console.log(err);
-	});
-
-	result.then(resolve => {
-      if (resolve === false) {
-	    res.status(403).end();
-	  } else {
-		res.status(200).end();
-	  }
-	}, err => {
-	  console.log(err);	
-	});
-  }, error => {
-    console.log(error);
-	res.status(400).end();
-  });
-}
+const express = require('express');
+const router = express.Router();
+const handler = require('./photoHandler');
 
 router.post('/createAlbum', function (req, res) {
-	handleCreateAlbum(req, res);
+  handler.handleCreateAlbum(req, res);
 });
 
 router.post('/deleteAlbum', function (req, res) {
@@ -87,7 +15,7 @@ router.post('/modifyAlbum', function (req, res) {
 });
 
 router.post('/addPhoto', function (req, res) {
-	console.log("add photo");
+  handler.handleAddPhoto(req, res);
 });
 
 router.post('/deletePhoto', function (req, res) {
@@ -99,4 +27,3 @@ router.post('/modifyPhoto', function (req, res) {
 });
 
 module.exports = router;
-
