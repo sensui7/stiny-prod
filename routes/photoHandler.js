@@ -10,6 +10,11 @@ const admins = [
 ];
 
 async function handleCreateAlbum(req, res) {
+  if (req.body.albumName === "") {
+	res.status(403).end();
+    return;
+  }
+
   return verifyToken(req).then(ticket => {
     const email = ticket.payload['email'];
 
