@@ -14,6 +14,7 @@ const chai = require('chai');
 chai.use(sinonChai);
 require('dotenv').config();
 
+
 const dummyReq = {
   "body": {
 	"email": process.env.ADMIN_ONE
@@ -39,8 +40,9 @@ describe("PhotoHandler", () => {
 	    let verifySpy = sinon.stub();
 	    mock('../routes/verifyToken', verifySpy);
 	    verifySpy.resolves(dummyTicket);
-	    const handler = require("../routes/photoHandler");
-	    handler.handleAddPhoto(dummyReq,{});
+		const { handleAddPhoto } = require("../routes/photoHandler");
+	    //const handler = require("../routes/photoHandler");
+	    handleAddPhoto(dummyReq,{});
 		sinon.assert.calledOnce(verifySpy);
 	  });
 
@@ -51,8 +53,9 @@ describe("PhotoHandler", () => {
 		dummyTicket.payload.email = "bad@gmail.com";
 	    verifySpy.resolves(dummyTicket);
 		verifySpy.rejects("Not authorized user.");
-	    const handler = require("../routes/photoHandler");
-	    await handler.handleAddPhoto(dummyReq,res).then(resolve => {
+	    //const handler = require("../routes/photoHandler");
+		const { handleAddPhoto } = require("../routes/photoHandler");
+	    handleAddPhoto(dummyReq,res).then(resolve => {
 		  chai.expect(res.status).to.have.been.calledWith(403);
 		});
 	  });
