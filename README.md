@@ -4,16 +4,28 @@ Personal website for my girlfriend Ciny and me! We take a lot of photos and do a
 # Technologies
 
 This project was built with tools/frameworks etc.
+- `CircleCI`
+  - Great for CI/CD pipeline where a deployment would occur after successful tests
 - `Cloudinary`
+  - Needed a service to store photos while providing an easy to use API
 - `Node.js`
+  - A modern platform for building scalable network applications
 - `React.js` 
+  - A modern library for building user interfaces
 - `Materialize CSS` 
+  - A modern library for designing user interfaces
 - `MongoDB`
+  - A modern and flexible NoSQL database
 - `Mongoose`
+  - An object data modeling library used with Node and MongoDB; great for data validation etc.
 - `Jest`
+  - Testing library for React code
 - `Mocha`
+  - Testing library for Node code
 - `Heroku`
+  - Hosting website
 - `MongoDB Atlas`
+  - Hosting website for MongoDB
 
 # Instructions
 To run this locally, execute in order:
