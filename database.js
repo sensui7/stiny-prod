@@ -17,10 +17,13 @@ const Name = mongoose.model('Album', albumSchema);
 
 const config = {
   useNewUrlParser: true,
+  useUnifiedTopology: true  
 };
 
 // Initial database connection
-mongoose.connect(process.env.MONGO_CONNECT, config);
+mongoose.connect(process.env.MONGO_CONNECT, config).catch(error => {
+  console.log("Error: ", error);
+});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
 
