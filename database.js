@@ -16,30 +16,62 @@ const albumSchema = new Schema ({
 const Name = mongoose.model('Album', albumSchema);
 
 const config = {
-	useNewUrlParser: true
+  useNewUrlParser: true,
 };
 
-function createAlbum(albumName) {
-  mongoose.connect(process.env.MONGO_CONNECT, config);
-  const db = mongoose.connection;
+// Initial database connection
+mongoose.connect(process.env.MONGO_CONNECT, config);
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error'));
 
-  db.on('error', console.error.bind(console, 'connection error'));
-  db.once('open', () => {
-    console.log("Connected to the database for createAlbum");
+async function albumExists(albumName, data) {
+  await Name.find({name: albumName}, (err, entry) => {
+    if (err) {
+	  throw err;
+	}
 
+	// For testing purposes
+	// console.log(entry);
+
+    if (entry.length === 0) {
+      data.save(function (err) {
+	    if (err) {
+	      return;
+        }
+        console.log("Album saved.");
+	  });
+	} else {
+		console.log("Album already exists!");
+	}
+  });
+}
+
+async function getAlbum(albumName) {
+  const result = await Name.find({name: albumName}, (err, entry) => {
+    if (err) {
+	  throw err;
+	}
+
+	return entry;
+  });
+
+  return result;
+}
+
+async function createAlbum(albumName) {
 	const data = Name({
       album: [],
 	  name: albumName
 	});
 
-	data.save(function (err) {
-	  if (err) {
-	    throw err;
-	  }
-	  mongoose.connection.close();
-    });
-  });
+    await albumExists(albumName, data);
 }
 
-exports.createAlbum = createAlbum;
+async function deleteAlbum(albumName) {
+  await db.collection(albumName).drop().catch(err => {console.log(err)});
+}
 
+exports.getAlbum = getAlbum;
+exports.createAlbum = createAlbum;
+exports.deleteAlbum = deleteAlbum;
+exports.mongoose = mongoose;
