@@ -1,8 +1,13 @@
 # Stiny [![CircleCI](https://circleci.com/gh/sensui7/stiny-prod.svg?style=svg)](https://circleci.com/gh/sensui7/stiny-prod)
 Personal website for my girlfriend Ciny and me! We take a lot of photos and do a lot of cooking, so I thought it would be a fun idea to learn/relearn a bunch of technologies I've used at previous internships to build something that we'd both use.
 
-# Technologies
 
+# Instructions
+To run this locally, execute in order:
+- `npm install` to install the dependencies
+- `npm start` to run the start script
+
+# Technologies
 This project was built with tools/frameworks etc.
 - `CircleCI`
   - Great for CI/CD pipeline where a deployment would occur after successful tests
@@ -26,8 +31,3 @@ This project was built with tools/frameworks etc.
   - Hosting website
 - `MongoDB Atlas`
   - Hosting website for MongoDB
-
-# Instructions
-To run this locally, execute in order:
-- `npm install` to install the dependencies
-- `npm start` to run the start script
