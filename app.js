@@ -22,11 +22,13 @@ app.set('view engine', 'pug');
 
 app.use(express.static(path.join(__dirname, 'build')));
 
-app.use('/', photosRouter);
+//app.use('/', photosRouter);
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
+
+app.use('/', photosRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
