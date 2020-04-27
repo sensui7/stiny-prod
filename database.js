@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const uniqueValidator = require('mongoose-unique-validator');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 require('dotenv').config();
 
 const photoSchema = new Schema({
@@ -22,26 +23,24 @@ const config = {
   useUnifiedTopology: true
 };
 
+const mongod = new MongoMemoryServer();
+
 // Initial database connection
+/*
 mongoose.connect(process.env.MONGO_CONNECT, config).catch(error => {
   console.log("Error: ", error);
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));
+*/
 
-//async function albumExists(albumName, data) {
-async function albumExists(albumName) {
-  return await Name.find({name: albumName}, (err, entry) => {
-    if (err) {
-	  throw err;
-	}
-
-	return entry;
-  });
+async function connect(mongoUri) {
+  const uri = mongoUri || await mongod.getConnectionString();
+  await mongoose.connect(uri, config);
 }
 
 async function getAlbum(albumName) {
-  return await Name.find({name: albumName}, (err, entry) => {
+  return Name.find({name: albumName}, (err, entry) => {
     if (err) {
 	  throw err;
 	}
@@ -56,22 +55,57 @@ async function createAlbum(albumName) {
 	name: albumName
   });
 
-  await data.save(function (err) {
+  await data.save(async function (err, res) {
     if (err) {
+	  console.log("Error occured when creating a new album: " + err);
 	  return;
     }
 
-    console.log("Album saved.");
   });
+}
 
-  return await getAlbum(albumName);
+/*
+1. Find the album if it exists
+2. Once album found, add onto the array entry
+3. Store the data back into the database
+*/
+async function addPicture(data) {
+  let albumName = data.albumName;
+
+  let entry = await getAlbum(albumName);
+
+  if (entry.album === undefined) {
+    entry.album = [];
+  }
+ 
+  entry.album.push(data);
+
+  return await Name.findOneAndUpdate(
+		  { name: albumName }, 
+		  { album: entry.album },
+		  (err, result) => {
+		 	if (err) {
+			  console.log("Err: " + err);
+			  return;
+			}
+		  });
+}
+
+async function closeDatabase() {
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
+  await mongod.stop();
 }
 
 async function deleteAlbum(albumName) {
-  await db.collection(albumName).drop().catch(err => {console.log(err)});
+  await mongoose.connection.collection(albumName).drop().catch(err => {console.log(err)});
 }
 
+module.exports.addPicture = addPicture;
 exports.getAlbum = getAlbum;
 exports.createAlbum = createAlbum;
 exports.deleteAlbum = deleteAlbum;
+exports.addPicture = addPicture;
+exports.connect = connect;
+exports.closeDatabase = closeDatabase;
 exports.mongoose = mongoose;

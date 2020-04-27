@@ -1,5 +1,6 @@
 const database = require('../database');
 const verifyToken = require('./verifyToken');
+const uploadPhoto = require('./uploadPhoto');
 require('dotenv').config();
 
 const admins = [
@@ -9,13 +10,15 @@ const admins = [
   process.env.ADMIN_FOUR
 ];
 
+database.connect(process.env.MONGO_CONNECT);
+
 async function handleCreateAlbum(req, res) {
   if (req.body.albumName === "") {
 	res.status(403).end();
     return;
   }
 
-  return verifyToken(req).then(ticket => {
+  return verifyToken(req).then(async ticket => {
     const email = ticket.payload['email'];
 
     if (!admins.includes(email)) {
@@ -23,39 +26,65 @@ async function handleCreateAlbum(req, res) {
 	  return;
 	}
 
-	let result = database.createAlbum(req.body.albumName).then(resolve => {
-	  if (resolve.length === 1) {
-	    return false;
-	  }
-	}, err => {
-	  console.log(err);
-	});
+	let find = await database.getAlbum(req.body.albumName);
+	if (find !== undefined && find.length === 1) {
+	  res.status(403).end();
+	  return;
+	}
 
-	result.then(resolve => {
-      if (resolve === false) {
-	    res.status(403).end();
-	  } else {
-		res.status(200).end();
-	  }
-	}, err => {
-	  console.log(err);	
-	});
+	await database.createAlbum(req.body.albumName);
+
+	res.status(200).end();
   }, error => {
-    console.log(error);
+    console.log("Could not verify or token expired: " + error);
 	res.status(400).end();
   });
 }
 
 async function handleAddPhoto(req, res) {
-  verifyToken(req).then(ticket => {
+  return verifyToken(req).then(async ticket => {
     const email = ticket.payload['email'];
 
     if (!admins.includes(email)) {
-	  res.status(403).end();
+	  res.status(401).end();
 	  return;
 	}
+
+	const data = req.body;
+
+	let dataToSend = {
+	  albumName: data.albumName,
+	  caption: data.caption,
+	  date: data.date
+	};
+
+	const file = req.file;
+	const filename = file.originalname;
+	const outcome = uploadPhoto(file.originalname);
+
+	let result = outcome.then(resolve => {
+	  console.log("Cloudinary succeeded.");
+	  return resolve.secure_url;
+	}, err => {
+	  console.log("Cloudinary failed: " + err);
+	});
+
+	// Should have the secure_url as the resolved value from the previous promise
+	await result.then(resolve => {
+	  const secure_url = resolve;
+	  dataToSend.link = secure_url;
+
+	  database.addPicture(dataToSend).then(resolve => {
+	    res.status(200).end();
+	  }, err => {
+	    console.log("Adding photo to database failed: " + err);
+	  });
+	}, err => {
+	  res.status(500).end();
+	});
+
   }, error => {
-    console.log(error);
+    console.log("Could not verify or token expired: " + error);
 	res.status(400).end();
   });
 }

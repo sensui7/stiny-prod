@@ -4,20 +4,22 @@ const sinon = require('sinon');
 const chai = require('chai');
 const expect = chai.expect;
 const database = require('../database');
-require('dotenv').config();
+
+before(async() => {
+  await database.connect();
+});
+
+after(async() => {
+  await database.deleteAlbum("albums");
+  await database.closeDatabase();
+});
 
 describe('Database Tests', () => {
-	after(done => {
-	  database.deleteAlbum("albums").then(res => {
-	    database.mongoose.connection.close(); 
-		done();
-      });
-	});
-
-	it('should successfully add a new album to the database', done => {
-	  database.createAlbum("Memories").then(resolve => {
-	    done();
-      });
+	it('should successfully add a new album to the database', async() => {
+	  chai.expect(async () => await database.createAlbum("Memories"))
+	      .to
+		  .not
+		  .throw();
 	});
 
 	it('should not add duplicate album(s) to the database', async() => {
@@ -27,4 +29,22 @@ describe('Database Tests', () => {
 	  let result = await database.getAlbum("Memories");
 	  assert.equal(result.length, 1);
 	});
+
+	it('should add a photo onto an existing album in the database', async() => {
+		const dummyData = {
+			link: "https://google.com/",
+			albumName: "Memories",
+			caption: "Snowing",
+			date: "1/1/2008"
+		};
+
+		let result = await database.addPicture(dummyData);
+		assert.notEqual(result.album, undefined);
+	});
+
+	/*
+	it('should not add a photo to a non-existent album in the database', async() => {
+		
+	});
+	*/
 });
