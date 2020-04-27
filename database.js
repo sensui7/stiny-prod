@@ -71,18 +71,11 @@ async function createAlbum(albumName) {
 */
 async function addPicture(data) {
   let albumName = data.albumName;
-
   let entry = await getAlbum(albumName);
-
-  if (entry.album === undefined) {
-    entry.album = [];
-  }
- 
-  entry.album.push(data);
 
   return await Name.findOneAndUpdate(
 		  { name: albumName }, 
-		  { album: entry.album },
+		  { $addToSet: { album: data } },
 		  (err, result) => {
 		 	if (err) {
 			  console.log("Err: " + err);
