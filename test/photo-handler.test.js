@@ -117,6 +117,7 @@ describe("PhotoHandler", () => {
 		let res = mockResponse(options);
 	    verifyStub.resolves(dummyTicket);
 		uploadStub.resolves({"secure_url": "https://test.com/"});
+		databaseSpy.getAlbum = sinon.stub().returns({});
 		databaseSpy.addPicture = sinon.stub();
 		databaseSpy.addPicture.resolves(true);
 
@@ -135,11 +136,30 @@ describe("PhotoHandler", () => {
 		
 	    const req = mockRequest(options);
 		const res = mockResponse();
-		let copy = dummyTicket;
-		copy.payload.email = "bad@gmail.com";
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
 		verifyStub.resolves(copy);
 	    await handler.handleAddPhoto(dummyReq, res);
 		chai.expect(res.status).to.have.been.calledWith(401);
+	  });
+
+	  it('should not work with a non-existing album', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE
+		  }
+		};
+		
+		databaseSpy.getAlbum = sinon.stub().returns(undefined);
+		verifyStub.resolves(dummyTicket);
+	    const req = mockRequest(options);
+	    const res = mockResponse();
+		await handler.handleAddPhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
 	  });
 
 	  it('should output an error when verification fails', async() => {
@@ -155,6 +175,120 @@ describe("PhotoHandler", () => {
 		await handler.handleAddPhoto(req, res);
 		chai.expect(res.status).to.have.been.calledWith(400);
       });
+	});
+  });
+
+  describe('handleGetAlbumList', () => {
+    describe("When google verification occurs", () => {
+	  afterEach(() => {
+	    verifyStub.reset();
+	  });
+
+	  it('should get the list of albums', async() => {
+		let options = {
+		  body: {
+		    email: process.env.ADMIN_ONE
+		  },
+		  params: {
+			albumName: "testAlbum",
+		  }
+		};
+	   
+	    verifyStub.resolves(dummyTicket);
+		let res = mockResponse(options);
+		let req = mockRequest(options);
+		databaseSpy.getAlbumList = sinon.spy();
+		await handler.handleGetAlbumList(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.createAlbum).to.have.callCount(1);
+	  });
+
+      it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleGetAlbumList(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
+	});
+  });
+
+  describe('handleGetAlbumPhotos', () => {
+	describe("when google verification occurs", () => {
+	  afterEach(() => {
+	    verifyStub.reset();
+	  });
+
+	  it('should get all photos for album', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+
+		const dummyAlbum = {
+			album: {
+				link: "test.com",
+				caption: "testCaption",
+				date: "testDate"
+			}
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.getAlbum = sinon.stub().returns(dummyAlbum);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleGetAlbumPhotos(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.getAlbum).to.have.callCount(1);
+	  });
+
+	  it('should not allow unauthorized users', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
+		verifyStub.resolves(copy);
+	    await handler.handleGetAlbumPhotos(req, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
+	  });
+
+	  it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleGetAlbumPhotos(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
 	});
   });
 });

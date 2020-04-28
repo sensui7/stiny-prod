@@ -50,6 +50,12 @@ async function handleAddPhoto(req, res) {
 	  return;
 	}
 
+	let find = await database.getAlbum(req.body.albumName);
+	if (find === undefined) {
+	  res.status(403).end();
+	  return;
+	}
+
 	const data = req.body;
 
 	let dataToSend = {
@@ -89,5 +95,52 @@ async function handleAddPhoto(req, res) {
   });
 }
 
+async function handleGetAlbumList(req, res) {
+  req.body = {
+	idtoken: req.query.idtoken
+  };
+
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+	let data = await database.getAlbumList();
+
+	res.status(200).send(data);
+	console.log("sending: " + data);
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
+async function handleGetAlbumPhotos(req, res) {
+  req.body = {
+	idtoken: req.query.idtoken
+  };
+
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+	let data = await database.getAlbum(req.query.albumName);
+
+	res.status(200).send(data);
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
 exports.handleCreateAlbum = handleCreateAlbum;
 exports.handleAddPhoto = handleAddPhoto;
+exports.handleGetAlbumList = handleGetAlbumList;
+exports.handleGetAlbumPhotos = handleGetAlbumPhotos;

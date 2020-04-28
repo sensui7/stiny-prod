@@ -47,6 +47,25 @@ describe("Photos", () => {
           });
       });
     });
+
+	describe("/albums", () => {
+	  it("should return 302 and hits the correct path", () => {
+        mock("../routes/photoHandler", handler);
+        const app = require("../app");
+
+        request(app)
+          .get("/albums")
+          .send({})
+          .expect(302)
+          .end(function (err, res) {
+            should(res.header.location).endWith("/albums");
+
+            if (err) {
+              throw err;
+            }
+          });
+	  });
+	});
   });
 });
 

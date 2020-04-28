@@ -39,8 +39,12 @@ router.post('/modifyPhoto', function (req, res) {
 	console.log("modify photo");
 });
 
-router.get('/album/:albumname', function (req, res) {
-  res.send(req.params);
+router.get('/albums', function (req, res) {
+  handler.handleGetAlbumList(req, res);
+});
+
+router.get('/albumPhotos', function(req, res) {
+  handler.handleGetAlbumPhotos(req, res);
 });
 
 module.exports = router;

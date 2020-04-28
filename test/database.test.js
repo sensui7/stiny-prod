@@ -25,7 +25,7 @@ describe('Database Tests', () => {
 	it('should not add duplicate album(s) to the database', async() => {
 	  await database.createAlbum("Memories");
 
-	  let result = await database.getAlbum("Memories");
+	  const result = await database.getAlbum("Memories");
 	  assert.equal(result.length, 1);
 	});
 
@@ -51,6 +51,17 @@ describe('Database Tests', () => {
 
 	  let result = await database.addPicture(dummyData);
 	  assert.notEqual(result.album, undefined);
+	});
+
+	it('should add another album to the album list', async() => {
+	  await database.createAlbum("Farming");
+	  const farming = await database.getAlbum("Farming");
+	  assert.notEqual(farming, undefined);
+	});
+
+	it('should get the album list', async() => {
+	  const result = await database.getAlbumList();
+	  assert.equal(result.length, 2);
 	});
 
 	/*

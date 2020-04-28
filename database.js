@@ -84,6 +84,11 @@ async function addPicture(data) {
 		  });
 }
 
+async function getAlbumList() {
+  const albumList = await Name.find({});
+  return albumList.map(item => item.name);
+}
+
 async function closeDatabase() {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
@@ -99,6 +104,7 @@ exports.getAlbum = getAlbum;
 exports.createAlbum = createAlbum;
 exports.deleteAlbum = deleteAlbum;
 exports.addPicture = addPicture;
+exports.getAlbumList = getAlbumList;
 exports.connect = connect;
 exports.closeDatabase = closeDatabase;
 exports.mongoose = mongoose;
