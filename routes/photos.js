@@ -19,12 +19,13 @@ router.post('/createAlbum', function (req, res) {
   handler.handleCreateAlbum(req, res);
 });
 
+// Necessary?
 router.post('/deleteAlbum', function (req, res) {
-	console.log("delete album");
+  console.log("delete album");
 });
 
 router.post('/modifyAlbum', function (req, res) {
-	console.log("modify album");
+  console.log("modify album");
 });
 
 router.post('/addPhoto', upload.single('image'), function (req, res, next) {
@@ -32,11 +33,11 @@ router.post('/addPhoto', upload.single('image'), function (req, res, next) {
 });
 
 router.post('/deletePhoto', function (req, res) {
-	console.log("delete photo");
+  handler.handleDeletePhoto(req, res);
 });
 
 router.post('/modifyPhoto', function (req, res) {
-	console.log("modify photo");
+  console.log("modify photo");
 });
 
 router.get('/albums', function (req, res) {

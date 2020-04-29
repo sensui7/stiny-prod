@@ -66,6 +66,44 @@ describe("Photos", () => {
           });
 	  });
 	});
+
+	describe("/albumPhotos", () => {
+	  it("should return 302 and hits the correct path", () => {
+        mock("../routes/photoHandler", handler);
+        const app = require("../app");
+
+        request(app)
+          .get("/albumPhotos")
+          .send({})
+          .expect(302)
+          .end(function (err, res) {
+            should(res.header.location).endWith("/albumPhotos");
+
+            if (err) {
+              throw err;
+            }
+          });
+	  });
+	});
+
+	describe("/deletePhoto", () => {
+	  it("should return 302 and hits the correct path", () => {
+        mock("../routes/photoHandler", handler);
+        const app = require("../app");
+
+        request(app)
+          .post("/deletePhoto")
+          .send({})
+          .expect(302)
+          .end(function (err, res) {
+            should(res.header.location).endWith("/deletePhoto");
+
+            if (err) {
+              throw err;
+            }
+          });
+	  });
+	});
   });
 });
 

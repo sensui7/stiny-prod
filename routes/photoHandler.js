@@ -140,7 +140,37 @@ async function handleGetAlbumPhotos(req, res) {
   });
 }
 
+async function handleDeletePhoto(req, res) {
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+	const albumName = req.body.albumName;
+	const link = req.body.link;
+
+	let result = await database.deletePicture(albumName, link);
+
+	// 500: server can not perform this request
+	// Either deleted or something else happened
+	if (result.ok === 0) {
+	  res.status(500).end();
+	  return;
+	}
+
+	// Means result.ok === true
+	res.status(200).end();
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
 exports.handleCreateAlbum = handleCreateAlbum;
 exports.handleAddPhoto = handleAddPhoto;
 exports.handleGetAlbumList = handleGetAlbumList;
 exports.handleGetAlbumPhotos = handleGetAlbumPhotos;
+exports.handleDeletePhoto = handleDeletePhoto;

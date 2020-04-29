@@ -291,5 +291,102 @@ describe("PhotoHandler", () => {
 	  });
 	});
   });
+
+  describe('handleDeletePhoto', () => {
+	describe("when google verification occurs", () => {
+	  afterEach(() => {
+	    verifyStub.reset();
+	  });
+
+	  it('should delete the photo from the album', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE,
+			albumName: "testAlbum",
+			link: "https://test.com/"
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+
+		const dummyResult= {
+		  ok: 1
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.deletePhoto = sinon.stub().returns(dummyResult);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleDeletePhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.deletePhoto).to.have.callCount(1);
+	  }
+	  );
+	  it('should not delete photo from album if operation did not succeed', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE,
+			albumName: "testAlbum",
+			link: "https://test.com/"
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+
+		const dummyResult= {
+		  ok: 0
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.deletePhoto = sinon.stub().returns(dummyResult);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleDeletePhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(500);
+		chai.expect(databaseSpy.deletePhoto).to.have.callCount(1);
+	  });
+
+	  it('should not allow unauthorized users', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
+		verifyStub.resolves(copy);
+	    await handler.handleDeletePhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
+	  });
+
+	  it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleDeletePhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
+	});
+  });
 });
 

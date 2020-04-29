@@ -84,6 +84,23 @@ async function addPicture(data) {
 		  });
 }
 
+/*
+1. Pull operator removes an item from an array
+2. Get to the alubm
+3. Pass in an object query representing the link to be found to delete
+*/
+async function deletePicture(albumName, link) {
+  return await Name.updateOne(
+		  { name: albumName },
+		  { $pull: { album: {link: link} } },
+		  (err, result) => {
+		 	if (err) {
+			  console.log("Err: " + err);
+			  return;
+			}
+		  });
+}
+
 async function getAlbumList() {
   const albumList = await Name.find({});
   return albumList.map(item => item.name);
@@ -104,6 +121,7 @@ exports.getAlbum = getAlbum;
 exports.createAlbum = createAlbum;
 exports.deleteAlbum = deleteAlbum;
 exports.addPicture = addPicture;
+exports.deletePicture = deletePicture;
 exports.getAlbumList = getAlbumList;
 exports.connect = connect;
 exports.closeDatabase = closeDatabase;

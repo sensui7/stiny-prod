@@ -64,6 +64,11 @@ describe('Database Tests', () => {
 	  assert.equal(result.length, 2);
 	});
 
+	it('should delete a photo from an album', async() => {
+	  const result = await database.deletePicture("Memories", "https://google.com/");
+	  assert.equal(result.ok, true);
+	});
+
 	/*
 	it('should not add a photo to a non-existent album in the database', async() => {
 		
