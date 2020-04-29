@@ -317,11 +317,11 @@ describe("PhotoHandler", () => {
 	    const req = mockRequest(options);
 		const res = mockResponse();
 
-		databaseSpy.deletePhoto = sinon.stub().returns(dummyResult);
+		databaseSpy.deletePicture = sinon.stub().returns(dummyResult);
 		verifyStub.resolves(dummyTicket);
 	    await handler.handleDeletePhoto(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
-		chai.expect(databaseSpy.deletePhoto).to.have.callCount(1);
+		chai.expect(databaseSpy.deletePicture).to.have.callCount(1);
 	  }
 	  );
 	  it('should not delete photo from album if operation did not succeed', async() => {
@@ -343,11 +343,11 @@ describe("PhotoHandler", () => {
 	    const req = mockRequest(options);
 		const res = mockResponse();
 
-		databaseSpy.deletePhoto = sinon.stub().returns(dummyResult);
+		databaseSpy.deletePicture = sinon.stub().returns(dummyResult);
 		verifyStub.resolves(dummyTicket);
 	    await handler.handleDeletePhoto(req, res);
 		chai.expect(res.status).to.have.been.calledWith(500);
-		chai.expect(databaseSpy.deletePhoto).to.have.callCount(1);
+		chai.expect(databaseSpy.deletePicture).to.have.callCount(1);
 	  });
 
 	  it('should not allow unauthorized users', async() => {
