@@ -8,6 +8,7 @@ var cloudinary = require('cloudinary').v2
 require('dotenv').config();
 
 var photosRouter = require('./routes/photos');
+var cookingRouter = require('./routes/cooking');
 
 // Always use HTTPS
 var secure = require('express-force-https');
@@ -23,6 +24,7 @@ app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.use('/', photosRouter);
+app.use('/', cookingRouter);
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));

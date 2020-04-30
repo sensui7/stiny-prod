@@ -15,8 +15,14 @@ const albumSchema = new Schema ({
   name: {type: String, required: true, unique: true}
 });
 
+const recipeSchema = new Schema ({
+  data: {type: String, required: true},
+  name: {type: String, required: true, unique: true}
+});
+
 albumSchema.plugin(uniqueValidator);
 const Name = mongoose.model('Album', albumSchema);
+const Recipe = mongoose.model('Recipe', recipeSchema);
 
 const config = {
   useNewUrlParser: true,
@@ -40,7 +46,7 @@ async function connect(mongoUri) {
 }
 
 async function getAlbum(albumName) {
-  return Name.find({name: albumName}, (err, entry) => {
+  return await Name.find({name: albumName}, async (err, entry) => {
     if (err) {
 	  throw err;
 	}
@@ -106,6 +112,40 @@ async function getAlbumList() {
   return albumList.map(item => item.name);
 }
 
+async function addRecipe(name, data) {
+  const recipe = Recipe({
+    data: data,
+	name: name
+  });
+
+  await recipe.save(async (err, res) => {
+    if (err) {
+	  console.log("Error occured when creating a new album: " + err);
+	  return;
+    }
+  });
+}
+
+async function getAllRecipes() {
+  const recipes = await Recipe.find({});
+  return recipes.map(item => {
+	return {
+	  name: item.name,
+	  data: item.data
+	};
+  });
+}
+
+async function getRecipe(recipeName) {
+  return await Recipe.find({name: recipeName}, async (err, entry) => {
+    if (err) {
+	  throw err;
+	}
+
+	return entry;
+  });
+}
+
 async function closeDatabase() {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
@@ -123,6 +163,9 @@ exports.deleteAlbum = deleteAlbum;
 exports.addPicture = addPicture;
 exports.deletePicture = deletePicture;
 exports.getAlbumList = getAlbumList;
+exports.addRecipe = addRecipe;
+exports.getAllRecipes = getAllRecipes;
+exports.getRecipe = getRecipe;
 exports.connect = connect;
 exports.closeDatabase = closeDatabase;
 exports.mongoose = mongoose;

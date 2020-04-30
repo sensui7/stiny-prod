@@ -1,7 +1,9 @@
+const resnap = require('resnap')
 const assert = require('assert');
 const should = require('should');
 const sinon = require('sinon');
 const chai = require('chai');
+const mock = require('mock-require');
 const expect = chai.expect;
 const database = require('../database');
 
@@ -10,16 +12,12 @@ before(async() => {
 });
 
 after(async() => {
-  await database.deleteAlbum("albums");
   await database.closeDatabase();
 });
 
 describe('Database Tests', () => {
 	it('should successfully add a new album to the database', async() => {
-	  chai.expect(async () => await database.createAlbum("Memories"))
-	      .to
-		  .not
-		  .throw();
+	  await database.createAlbum("Memories");
 	});
 
 	it('should not add duplicate album(s) to the database', async() => {
@@ -67,6 +65,18 @@ describe('Database Tests', () => {
 	it('should delete a photo from an album', async() => {
 	  const result = await database.deletePicture("Memories", "https://google.com/");
 	  assert.equal(result.ok, true);
+	});
+
+	it('should add a new recipe', async() => {
+	  await database.addRecipe("Soup", "{}");
+	  const result = await database.getAllRecipes();
+	  assert.equal(result.length, 1);
+	});
+
+	it('should add multiple recipes', async() => {
+	  await database.addRecipe("Steak", "{}");
+	  const result = await database.getAllRecipes();
+	  assert.equal(result.length, 2);
 	});
 
 	/*

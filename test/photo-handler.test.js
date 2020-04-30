@@ -19,6 +19,8 @@ let uploadStub = sinon.stub();
 mock('../routes/uploadPhoto', uploadStub);
 let handler = require('../routes/photoHandler');
 
+console.log("HANDLER: " + handler);
+
 const dummyReq = {
   "body": {
 	"email": process.env.ADMIN_ONE
@@ -389,4 +391,3 @@ describe("PhotoHandler", () => {
 	});
   });
 });
-

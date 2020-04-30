@@ -111,7 +111,6 @@ async function handleGetAlbumList(req, res) {
 	let data = await database.getAlbumList();
 
 	res.status(200).send(data);
-	console.log("sending: " + data);
   }, error => {
     console.log("Could not verify or token expired: " + error);
 	res.status(400).end();

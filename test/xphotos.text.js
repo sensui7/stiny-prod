@@ -5,15 +5,18 @@ const request = require("supertest");
 const mock = require("mock-require");
 const sinon = require("sinon");
 const handler = sinon.spy();
+const cookingHandler = sinon.spy();
 
 describe("Photos", () => {
+
   describe("Routes", () => {
     // Mocking path is relative to the testing folder.
-    mock("../routes/photoHandler", handler);
     const app = require("../app");
 
     describe("/createAlbum", () => {
       it("should return 302 and hits the correct path", () => {
+		mock("../routes/cookingHandler", cookingHandler);
+		mock("../routes/photoHandler", handler);
         request(app)
           .post("/createAlbum")
           .send({})
@@ -29,7 +32,8 @@ describe("Photos", () => {
 
     describe("/addPhoto", () => {
       it("should return 302 and hits the correct path", (done) => {
-        mock("../routes/photoHandler", handler);
+		mock("../routes/cookingHandler", cookingHandler);
+		mock("../routes/photoHandler", handler);
         const app = require("../app");
 
         request(app)
@@ -50,7 +54,8 @@ describe("Photos", () => {
 
 	describe("/albums", () => {
 	  it("should return 302 and hits the correct path", () => {
-        mock("../routes/photoHandler", handler);
+		mock("../routes/cookingHandler", cookingHandler);
+		mock("../routes/photoHandler", handler);
         const app = require("../app");
 
         request(app)
@@ -69,7 +74,8 @@ describe("Photos", () => {
 
 	describe("/albumPhotos", () => {
 	  it("should return 302 and hits the correct path", () => {
-        mock("../routes/photoHandler", handler);
+		mock("../routes/cookingHandler", cookingHandler);
+		mock("../routes/photoHandler", handler);
         const app = require("../app");
 
         request(app)
@@ -88,7 +94,8 @@ describe("Photos", () => {
 
 	describe("/deletePhoto", () => {
 	  it("should return 302 and hits the correct path", () => {
-        mock("../routes/photoHandler", handler);
+		mock("../routes/cookingHandler", cookingHandler);
+		mock("../routes/photoHandler", handler);
         const app = require("../app");
 
         request(app)
@@ -106,4 +113,3 @@ describe("Photos", () => {
 	});
   });
 });
-
