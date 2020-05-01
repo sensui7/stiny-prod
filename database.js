@@ -154,6 +154,16 @@ async function deleteRecipe(recipeName) {
   });
 }
 
+async function updateRecipe(recipeName, newData) {
+  return await Recipe.updateOne({ name: recipeName }, 
+		  						{ $set: { data: newData }}, 
+		  						(err) => {
+    if (err) {
+	  throw err;
+	}
+  });
+}
+
 async function closeDatabase() {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
@@ -175,6 +185,7 @@ exports.addRecipe = addRecipe;
 exports.getAllRecipes = getAllRecipes;
 exports.getRecipe = getRecipe;
 exports.deleteRecipe = deleteRecipe;
+exports.updateRecipe = updateRecipe;
 exports.connect = connect;
 exports.closeDatabase = closeDatabase;
 exports.mongoose = mongoose;

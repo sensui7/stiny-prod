@@ -84,4 +84,12 @@ describe('Database Tests', () => {
 	  const allRecipes = await database.getAllRecipes();
 	  assert.equal(allRecipes.length, 1); 
 	});
+
+	// Returns { n: 1, nModified: 0, ok: 1 } for example 
+	it('should update a recipe', async() => {
+	  const testResult = await database.updateRecipe("Steak", "{no sauce}");
+	  const allRecipes = await database.getAllRecipes(); 
+	  assert.equal(allRecipes[0].data, "{no sauce}");
+	  assert.equal(testResult.ok, 1);
+	});
 });

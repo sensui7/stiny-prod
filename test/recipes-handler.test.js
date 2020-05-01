@@ -210,4 +210,95 @@ describe("CookingHandler", () => {
 	  });
 	});
   });
+
+  describe("handleUpdateRecipe", () => {
+    describe("When google verification occurs", () => {
+	  it('should not allow unauthorized users', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse();
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
+		verifyStub.resolves(copy);
+	    await handler.handleUpdateRecipe(dummyReq, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
+	  });
+
+      it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleUpdateRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
+
+      it('should update the recipe', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipeToUpdate",
+			data: "{new data}"
+		  }
+		};
+
+		const goodUpdate = {
+		  n: 1,
+		  nModified: 0,
+		  ok: 1
+		};
+
+		const dummyRecipes = [];
+	    
+	    verifyStub.resolves(dummyTicket);
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.updateRecipe = sinon.stub().returns(goodUpdate);
+		await handler.handleUpdateRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
+	  });
+
+      it('should not update the recipe', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipeToUpdate",
+			data: "{new data}"
+		  }
+		};
+
+		const badUpdate = {
+		  n: 0,
+		  nModified: 0,
+		  ok: 0
+		};
+
+		const dummyRecipes = [];
+	    
+	    verifyStub.resolves(dummyTicket);
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.updateRecipe = sinon.stub().returns(badUpdate);
+		await handler.handleUpdateRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(500);
+		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
+	  });
+	});
+  });
+
 });

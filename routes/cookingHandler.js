@@ -66,6 +66,34 @@ async function handleDeleteRecipe(req, res) {
   });
 }
 
+async function handleUpdateRecipe(req, res) {
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+	const recipeName = req.body.recipeName;
+	const newData = req.body.data;
+
+	const result = await database.updateRecipe(recipeName, newData);
+
+	// Update did not occur
+	if (result === undefined || result.ok === 0) {
+	  res.status(500).end();
+	  return;
+	}
+
+	// Update was successful
+	res.status(200).end();
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
 async function handleGetAllRecipes(req, res) {
   let data = await database.getAllRecipes();
   res.status(200).send(data);
@@ -73,4 +101,5 @@ async function handleGetAllRecipes(req, res) {
 
 exports.handleAddRecipe = handleAddRecipe;
 exports.handleDeleteRecipe = handleDeleteRecipe;
+exports.handleUpdateRecipe = handleUpdateRecipe;
 exports.handleGetAllRecipes = handleGetAllRecipes;

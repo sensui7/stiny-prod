@@ -61,5 +61,19 @@ describe("Recipes", () => {
           });
       });
     });
+
+    describe("/updateRecipe", () => {
+      it("should return 302 and hits the correct path", () => {
+        request(app)
+          .get("/updateRecipe")
+          .expect(302)
+          .end(function (err, res) {
+            should(res.header.location).endWith("/updateRecipe");
+            if (err) {
+              throw err;
+            }
+          });
+      });
+    });
   });
 });
