@@ -79,9 +79,9 @@ describe('Database Tests', () => {
 	  assert.equal(result.length, 2);
 	});
 
-	/*
-	it('should not add a photo to a non-existent album in the database', async() => {
-		
+	it('should delete a recipe', async() => {
+	  await database.deleteRecipe("Soup");
+	  const allRecipes = await database.getAllRecipes();
+	  assert.equal(allRecipes.length, 1); 
 	});
-	*/
 });

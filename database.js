@@ -146,6 +146,14 @@ async function getRecipe(recipeName) {
   });
 }
 
+async function deleteRecipe(recipeName) {
+  return await Recipe.deleteOne({ name: recipeName }, (err) => {
+    if (err) {
+	  throw err;
+	}
+  });
+}
+
 async function closeDatabase() {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
@@ -166,6 +174,7 @@ exports.getAlbumList = getAlbumList;
 exports.addRecipe = addRecipe;
 exports.getAllRecipes = getAllRecipes;
 exports.getRecipe = getRecipe;
+exports.deleteRecipe = deleteRecipe;
 exports.connect = connect;
 exports.closeDatabase = closeDatabase;
 exports.mongoose = mongoose;

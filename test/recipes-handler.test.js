@@ -126,4 +126,88 @@ describe("CookingHandler", () => {
 	  });
 	});
   });
+
+  describe("handleDeleteRecipe", () => {
+    describe("When google verification occurs", () => {
+	  afterEach(() => {
+	    verifyStub.reset();
+	  });
+
+	  it('should not allow unauthorized users', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse();
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
+		verifyStub.resolves(copy);
+	    await handler.handleDeleteRecipe(dummyReq, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
+	  });
+
+      it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleDeleteRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
+
+      it('should delete a recipe', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipeToDelete"
+		  }
+		};
+
+		const dummyRecipes = [];
+	    
+	    verifyStub.resolves(dummyTicket);
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.getRecipe = sinon.stub().returns(dummyRecipes);
+		databaseSpy.deleteRecipe = sinon.spy();
+		await handler.handleDeleteRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
+		chai.expect(databaseSpy.deleteRecipe).to.have.callCount(1);
+	  });
+
+      it('should fail to delete a recipe due to external reason', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipeToDelete"
+		  }
+		};
+
+		const dummyRecipes = [ "dummy" ];
+	    
+	    verifyStub.resolves(dummyTicket);
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.getRecipe = sinon.stub().returns(dummyRecipes);
+		databaseSpy.deleteRecipe = sinon.spy();
+		await handler.handleDeleteRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(500);
+		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
+		chai.expect(databaseSpy.deleteRecipe).to.have.callCount(1);
+	  });
+	});
+  });
 });

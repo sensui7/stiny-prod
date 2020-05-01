@@ -11,7 +11,7 @@ router.post('/updateRecipe', (req, res) => {
 });
 
 router.post('/deleteRecipe', (req, res) => {
-  // TODO
+  handler.handleDeleteRecipe(req, res);
 });
 
 router.get('/getAllRecipes', (req, res) => {

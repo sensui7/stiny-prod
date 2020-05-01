@@ -4,22 +4,20 @@ const express = require("express");
 const request = require("supertest");
 const mock = require("mock-require");
 const sinon = require("sinon");
+const databaseHandler = sinon.spy();
 const cookingHandler = sinon.spy();
 const photoHandler = sinon.spy();
+let app = null;
 
-after(() => {
-  mock.stopAll();
+before(() => {
+  // Mocking path is relative to the testing folder.
+  mock("../routes/photoHandler", photoHandler);
+  mock("../routes/cookingHandler", cookingHandler);
+  app = require("../app");
 });
 
 describe("Recipes", () => {
-  before(() => {
-    mock("../routes/photoHandler", photoHandler);
-    mock("../routes/cookingHandler", cookingHandler);
-  });
-
   describe("Routes", () => {
-    // Mocking path is relative to the testing folder.
-    const app = require("../app");
 
     describe("/addRecipe", () => {
       it("should return 302 and hits the correct path", () => {
@@ -29,6 +27,20 @@ describe("Recipes", () => {
           .expect(302)
           .end(function (err, res) {
             should(res.header.location).endWith("/addRecipe");
+            if (err) {
+              throw err;
+            }
+          });
+      });
+    });
+
+    describe("/deleteRecipe", () => {
+      it("should return 302 and hits the correct path", () => {
+        request(app)
+          .get("/deleteRecipe")
+          .expect(302)
+          .end(function (err, res) {
+            should(res.header.location).endWith("/deleteRecipe");
             if (err) {
               throw err;
             }
