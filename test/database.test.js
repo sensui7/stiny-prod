@@ -89,6 +89,7 @@ describe('Database Tests', () => {
 	it('should update a recipe', async() => {
 	  const testResult = await database.updateRecipe("Steak", "{no sauce}");
 	  const allRecipes = await database.getAllRecipes(); 
+	  console.log(allRecipes);
 	  assert.equal(allRecipes[0].data, "{no sauce}");
 	  assert.equal(testResult.ok, 1);
 	});
