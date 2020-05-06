@@ -1,7 +1,10 @@
 # Stiny [![CircleCI](https://circleci.com/gh/sensui7/stiny-prod.svg?style=svg)](https://circleci.com/gh/sensui7/stiny-prod)
 Personal website for my girlfriend Ciny and me! We take a lot of photos and do a lot of cooking, so I thought it would be a fun idea to learn/relearn a bunch of technologies I've used at previous internships to build something that we'd both use.
 
-*Still a work in progress*
+*Still a work in progress; some features left to do below:*
+- Removing many photos at once
+- Editing name for recipe
+- Consistent progress bar design for all operations with the backend
 
 # Instructions
 To run this locally, execute in order:
