@@ -51,6 +51,14 @@ describe('Database Tests', () => {
 	  assert.notEqual(result.album, undefined);
 	});
 
+	it('should modify captions and date for a photo', async() => {
+	  const result = database.editPicture("Memories", "https://tester.com/", "11/11/2011", "No tests");
+	  const test = await database.getAlbum("Memories");
+	  const verify = test[0].album[1];
+	  assert.equal(verify.caption, "No tests");
+	  assert.equal(verify.date, "11/11/2011");
+	});
+
 	it('should add another album to the album list', async() => {
 	  await database.createAlbum("Farming");
 	  const farming = await database.getAlbum("Farming");
@@ -65,6 +73,19 @@ describe('Database Tests', () => {
 	it('should delete a photo from an album', async() => {
 	  const result = await database.deletePicture("Memories", "https://google.com/");
 	  assert.equal(result.ok, true);
+	  const blah = await database.getAlbum("Memories");
+	});
+
+	it('should remove an album', async() => {
+	  const result = await database.removeAlbum("Farming");
+	  const total = await database.getAlbumList();
+	  assert.equal(total.length, 1);
+	});
+
+	it('should rename Memories album to Adventures', async() => {
+	  const result = await database.editAlbum("Memories", "Adventures");
+	  const total = await database.getAlbumList();
+	  assert(total[0], "Adventures");
 	});
 
 	it('should add a new recipe', async() => {
@@ -89,7 +110,6 @@ describe('Database Tests', () => {
 	it('should update a recipe', async() => {
 	  const testResult = await database.updateRecipe("Steak", "{no sauce}");
 	  const allRecipes = await database.getAllRecipes(); 
-	  console.log(allRecipes);
 	  assert.equal(allRecipes[0].data, "{no sauce}");
 	  assert.equal(testResult.ok, 1);
 	});

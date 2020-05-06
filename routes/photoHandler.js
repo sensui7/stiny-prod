@@ -41,6 +41,48 @@ async function handleCreateAlbum(req, res) {
   });
 }
 
+// Edits the album name
+async function handleEditAlbum(req, res) {
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
+async function handleDeleteAlbum(req, res) {
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+	let find = await database.getAlbum(req.body.albumName);
+
+	// If nothing to delete, return 500 status code
+	if (find === undefined || find.length === 0) {
+	  res.status(500).end();
+	  return;
+	}
+
+	await database.removeAlbum(req.body.albumName);
+
+	res.status(200).end();
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
 async function handleAddPhoto(req, res) {
   return verifyToken(req).then(async ticket => {
     const email = ticket.payload['email'];
@@ -139,6 +181,21 @@ async function handleGetAlbumPhotos(req, res) {
   });
 }
 
+async function handleEditPhoto(req, res) {
+  return verifyToken(req).then(async ticket => {
+    const email = ticket.payload['email'];
+
+    if (!admins.includes(email)) {
+	  res.status(403).end();
+	  return;
+	}
+
+  }, error => {
+    console.log("Could not verify or token expired: " + error);
+	res.status(400).end();
+  });
+}
+
 async function handleDeletePhoto(req, res) {
   return verifyToken(req).then(async ticket => {
     const email = ticket.payload['email'];
@@ -169,7 +226,10 @@ async function handleDeletePhoto(req, res) {
 }
 
 exports.handleCreateAlbum = handleCreateAlbum;
+exports.handleDeleteAlbum = handleDeleteAlbum;
+exports.handleEditAlbum = handleEditAlbum;
 exports.handleAddPhoto = handleAddPhoto;
+exports.handleEditPhoto = handleEditPhoto;
 exports.handleGetAlbumList = handleGetAlbumList;
 exports.handleGetAlbumPhotos = handleGetAlbumPhotos;
 exports.handleDeletePhoto = handleDeletePhoto;

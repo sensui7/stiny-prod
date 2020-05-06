@@ -70,6 +70,25 @@ async function createAlbum(albumName) {
   });
 }
 
+async function removeAlbum(albumName) {
+  return await Name.deleteOne({name: albumName}, error => {
+    if (error) {
+	  throw error;
+	}
+  });
+}
+
+async function editAlbum(oldName, newName) {
+  return await Name.findOneAndUpdate(
+		  { name: oldName },
+		  { $set: { name: newName } },
+		  (err, result) => {
+		    if (err) {
+			  throw err;
+			}
+		  });
+}
+
 /*
 1. Find the album if it exists
 2. Once album found, add onto the array entry
@@ -86,6 +105,20 @@ async function addPicture(data) {
 		 	if (err) {
 			  console.log("Err: " + err);
 			  return;
+			}
+		  });
+}
+
+/*
+Uses $ positional operator, which identifies correct matching element in array
+*/
+async function editPicture(albumName, link, date, caption) {
+  return await Name.updateOne(
+		  { name: albumName, "album.link": link },
+		  { $set: {"album.$.date" : date, "album.$.caption": caption }},
+		  (err, result) => {
+		    if (err) {
+			  throw err;
 			}
 		  });
 }
@@ -177,8 +210,11 @@ async function deleteAlbum(albumName) {
 module.exports.addPicture = addPicture;
 exports.getAlbum = getAlbum;
 exports.createAlbum = createAlbum;
+exports.removeAlbum = removeAlbum;
+exports.editAlbum = editAlbum;
 exports.deleteAlbum = deleteAlbum;
 exports.addPicture = addPicture;
+exports.editPicture = editPicture;
 exports.deletePicture = deletePicture;
 exports.getAlbumList = getAlbumList;
 exports.addRecipe = addRecipe;

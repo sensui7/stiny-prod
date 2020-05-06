@@ -19,9 +19,8 @@ router.post('/createAlbum', function (req, res) {
   handler.handleCreateAlbum(req, res);
 });
 
-// Necessary?
 router.post('/deleteAlbum', function (req, res) {
-  console.log("delete album");
+  handler.handleDeleteAlbum(req, res);
 });
 
 router.post('/modifyAlbum', function (req, res) {
