@@ -32,3 +32,5 @@ This project was built with tools/frameworks etc.
   - Hosting website
 - `MongoDB Atlas`
   - Hosting website for MongoDB
+- `TinyMCE`
+  - Online rich-text editor; used mostly for the recipes portion of the website
