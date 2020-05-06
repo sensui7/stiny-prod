@@ -37,3 +37,6 @@ This project was built with tools/frameworks etc.
   - Hosting website for MongoDB
 - `TinyMCE`
   - Online rich-text editor; used mostly for the recipes portion of the website
+- 'Cron Job'
+  - To ensure quick access due to Heroku dynos taking breaks after 30 minutes of idle activity
+  - https://cron-job.org/en/members/jobs/
