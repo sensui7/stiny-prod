@@ -125,7 +125,7 @@ async function editPicture(albumName, link, date, caption) {
 
 /*
 1. Pull operator removes an item from an array
-2. Get to the alubm
+2. Get to the album
 3. Pass in an object query representing the link to be found to delete
 */
 async function deletePicture(albumName, link) {

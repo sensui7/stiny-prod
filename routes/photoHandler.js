@@ -51,6 +51,19 @@ async function handleEditAlbum(req, res) {
 	  return;
 	}
 
+	const oldName = req.body.oldName;
+	const newName = req.body.newName;
+	let find = await database.getAlbum(req.body.oldName);
+
+	// If no album found to edit, return 500 status code
+	if (find === undefined || find.length === 0) {
+	  res.status(500).end();
+	  return;
+	}
+
+	await database.editAlbum(oldName, newName);
+
+	res.status(200).end();
   }, error => {
     console.log("Could not verify or token expired: " + error);
 	res.status(400).end();
@@ -190,6 +203,23 @@ async function handleEditPhoto(req, res) {
 	  return;
 	}
 
+	const data = req.body;
+	const albumName = data.albumName;
+	const link = data.link;
+	const date = data.date;
+	const caption = data.caption;
+
+	let find = await database.getAlbum(req.body.albumName);
+
+	// If no albums found to edit, return 500 status code
+	if (find === undefined || find.length === 0) {
+	  res.status(500).end();
+	  return;
+	}
+
+	await database.editPicture(albumName, link, date, caption);
+
+	res.status(200).end();
   }, error => {
     console.log("Could not verify or token expired: " + error);
 	res.status(400).end();

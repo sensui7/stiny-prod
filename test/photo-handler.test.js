@@ -477,4 +477,191 @@ describe("PhotoHandler", () => {
 	  });
 	});
   });
+
+  describe('handleEditAlbum', () => {
+	describe("when google verification occurs", () => {
+	  afterEach(() => {
+	    verifyStub.reset();
+	  });
+
+	  it('should not allow unauthorized users', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
+		verifyStub.resolves(copy);
+	    await handler.handleEditAlbum(req, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
+	  });
+
+	  it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleEditAlbum(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
+
+	  it('should edit the album', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE,
+			oldName: "testAlbum",
+			newName: "newAlbum"
+		  }
+		};
+
+		const dummyResult = [
+		  "testAlbum"
+		];
+
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.editAlbum = sinon.stub();
+		databaseSpy.getAlbum = sinon.stub().returns(dummyResult);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleEditAlbum(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.editAlbum).to.have.callCount(1);
+		chai.expect(databaseSpy.getAlbum).to.have.callCount(1);
+	  });
+
+	  it('should not edit the album when it does not exist', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE,
+			oldName: "testAlbum",
+			newName: "newAlbum"
+		  }
+		};
+
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.editAlbum = sinon.stub();
+		databaseSpy.getAlbum = sinon.stub().returns(undefined);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleEditAlbum(req, res);
+		chai.expect(res.status).to.have.been.calledWith(500);
+		chai.expect(databaseSpy.editAlbum).to.have.callCount(0);
+		chai.expect(databaseSpy.getAlbum).to.have.callCount(1);
+	  });
+	});
+  });
+
+  describe('handleEditPhoto', () => {
+	describe("when google verification occurs", () => {
+	  afterEach(() => {
+	    verifyStub.reset();
+	  });
+
+	  it('should not allow unauthorized users', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  },
+	      query: {
+			idtoken: "testtoken"
+		  }
+		};
+	
+	    const req = mockRequest(options);
+		const res = mockResponse();
+		const copy = {
+		  payload: {
+		    email: "bad@gmail.com"	
+		  }
+		};
+
+		verifyStub.resolves(copy);
+	    await handler.handleEditPhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(403);
+	  });
+
+	  it('should output an error when verification fails', async() => {
+		const options = {
+		  body: {
+			email: "bad@gmail.com"
+		  }
+		};
+		
+	    const req = mockRequest(options);
+		const res = mockResponse(options);
+		verifyStub.rejects("Not authorized user.");
+		await handler.handleEditPhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(400);
+	  });
+
+	  it('should edit the photo', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE,
+			albumName: "testAlbum",
+			link: "https://tester.com/",
+			date: "12/12/2012",
+			caption: "Testing"
+		  }
+		};
+
+		const dummyResult = [
+		  "testAlbum"
+		];
+
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.editPicture = sinon.stub();
+		databaseSpy.getAlbum = sinon.stub().returns(dummyResult);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleEditPhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.editPicture).to.have.callCount(1);
+		chai.expect(databaseSpy.getAlbum).to.have.callCount(1);
+		chai.expect(databaseSpy.editPicture).calledWith("testAlbum", "https://tester.com/", "12/12/2012", "Testing");
+	  });
+
+	  it('should not edit the photo when album does not exist', async() => {
+		const options = {
+		  body: {
+			email: process.env.ADMIN_ONE,
+			albumName: "testAlbum",
+			link: "https://tester.com/",
+			date: "12/12/2012",
+			caption: "Testing"
+		  }
+		};
+
+	    const req = mockRequest(options);
+		const res = mockResponse();
+
+		databaseSpy.editPicture = sinon.stub();
+		databaseSpy.getAlbum = sinon.stub().returns(undefined);
+		verifyStub.resolves(dummyTicket);
+	    await handler.handleEditPhoto(req, res);
+		chai.expect(res.status).to.have.been.calledWith(500);
+		chai.expect(databaseSpy.editPicture).to.have.callCount(0);
+		chai.expect(databaseSpy.getAlbum).to.have.callCount(1);
+	  });
+	});
+  });
 });

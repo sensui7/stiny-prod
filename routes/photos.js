@@ -23,8 +23,8 @@ router.post('/deleteAlbum', function (req, res) {
   handler.handleDeleteAlbum(req, res);
 });
 
-router.post('/modifyAlbum', function (req, res) {
-  console.log("modify album");
+router.post('/editAlbum', function (req, res) {
+  handler.handleEditAlbum(req, res);
 });
 
 router.post('/addPhoto', upload.single('image'), function (req, res, next) {
@@ -35,8 +35,8 @@ router.post('/deletePhoto', function (req, res) {
   handler.handleDeletePhoto(req, res);
 });
 
-router.post('/modifyPhoto', function (req, res) {
-  console.log("modify photo");
+router.post('/editPhoto', function (req, res) {
+  handler.handleEditPhoto(req, res);
 });
 
 router.get('/albums', function (req, res) {
