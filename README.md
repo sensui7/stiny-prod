@@ -1,7 +1,12 @@
 # Stiny [![CircleCI](https://circleci.com/gh/sensui7/stiny-prod.svg?style=svg)](https://circleci.com/gh/sensui7/stiny-prod)
 Personal website for my girlfriend Ciny and me! We take a lot of photos and do a lot of cooking, so I thought it would be a fun idea to learn/relearn a bunch of technologies I've used at previous internships to build something that we'd both use.
 
-*Still a work in progress*
+*Still a work in progress; some features left to do below:*
+- Google Refresh Token & Keep Logged In
+- Removing many photos at once
+- Editing name for recipe
+- Categorizing recipes (change UI / flexibility)
+- Consistent progress bar design for all operations with the backend
 
 # Instructions
 To run this locally, execute in order:
@@ -34,3 +39,6 @@ This project was built with tools/frameworks etc.
   - Hosting website for MongoDB
 - `TinyMCE`
   - Online rich-text editor; used mostly for the recipes portion of the website
+- `Cron Job`
+  - To ensure quick access due to Heroku dynos taking breaks after 30 minutes of idle activity
+  - https://cron-job.org/en/members/jobs/
