@@ -2,8 +2,10 @@
 Personal website for my girlfriend Ciny and me! We take a lot of photos and do a lot of cooking, so I thought it would be a fun idea to learn/relearn a bunch of technologies I've used at previous internships to build something that we'd both use.
 
 *Still a work in progress; some features left to do below:*
+- Google Refresh Token & Keep Logged In
 - Removing many photos at once
 - Editing name for recipe
+- Categorizing recipes (change UI / flexibility)
 - Consistent progress bar design for all operations with the backend
 
 # Instructions
