@@ -1,12 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const handler = require('./cookingHandler');
+const fs = require("fs");
+const multer = require('multer')
 
-router.post('/addRecipe', (req, res) => {
+const upload = multer({
+  storage: multer.diskStorage({
+    destination(req, file, cb) {
+      cb(null, 'uploads/');
+    },
+    filename(req, file, cb) {
+      cb(null, file.originalname);
+    },
+  }),
+});
+
+router.post('/addRecipe', upload.single('image'), (req, res, next) => {
   handler.handleAddRecipe(req, res);
 });
 
-router.post('/updateRecipe', (req, res) => {
+router.post('/updateRecipe', upload.single('image'), (req, res, next) => {
   handler.handleUpdateRecipe(req, res);
 });
 

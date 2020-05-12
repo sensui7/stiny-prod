@@ -14,6 +14,8 @@ let verifyStub = sinon.stub();
 mock('../routes/verifyToken', verifyStub);
 let databaseSpy = sinon.spy();
 databaseSpy.connect = sinon.spy();
+let uploadStub = sinon.stub();
+mock('../routes/uploadPhoto', uploadStub);
 mock('../database', databaseSpy);
 let handler = require('../routes/cookingHandler');
 
@@ -75,7 +77,8 @@ describe("CookingHandler", () => {
 		  "body": {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipe",
-			data: "{}"
+			data: "{}",
+			preview: "https://photo.com/12345"
 		  }
 		};
 	    
@@ -86,6 +89,7 @@ describe("CookingHandler", () => {
 		databaseSpy.addRecipe = sinon.spy();
 		await handler.handleAddRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.addRecipe).calledWith("testRecipe", "{}", "https://photo.com/12345");
 		chai.expect(databaseSpy.addRecipe).to.have.callCount(1);
 		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
 	  });
@@ -95,7 +99,8 @@ describe("CookingHandler", () => {
 		  "body": {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipe",
-			data: "{}"
+			data: "{}",
+			preview: "https://photo.com/12345"
 		  }
 		};
 
@@ -109,6 +114,31 @@ describe("CookingHandler", () => {
 		await handler.handleAddRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(500);
 		chai.expect(databaseSpy.addRecipe).to.have.callCount(0);
+		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
+	  });
+
+      it('should add a recipe via upload', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipe",
+			data: "{}",
+		  },
+		  "file": {
+			originalname: "testFile"
+		  }
+		};
+	    
+	    verifyStub.resolves(dummyTicket);
+		uploadStub.resolves({"secure_url": "https://test.com/"});
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.getRecipe = sinon.spy();
+		databaseSpy.addRecipe = sinon.spy();
+		await handler.handleAddRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.addRecipe).calledWith("testRecipe", "{}", "https://test.com/");
+		chai.expect(databaseSpy.addRecipe).to.have.callCount(1);
 		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
 	  });
 	});
@@ -252,6 +282,7 @@ describe("CookingHandler", () => {
 		  "body": {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipeToUpdate",
+			newName: "newRecipe",
 			data: "{new data}"
 		  }
 		};
@@ -271,6 +302,7 @@ describe("CookingHandler", () => {
 		await handler.handleUpdateRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
 		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
+		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", undefined, "newRecipe");
 	  });
 
       it('should not update the recipe', async() => {
@@ -296,6 +328,65 @@ describe("CookingHandler", () => {
 		databaseSpy.updateRecipe = sinon.stub().returns(badUpdate);
 		await handler.handleUpdateRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(500);
+		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
+	  });
+
+      it('should update the recipe for a user-based upload', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipeToUpdate",
+			data: "{new data}"
+		  },
+		  "file": {
+		    originalname: "testFile"
+		  }
+		};
+
+		const goodUpdate = {
+		  n: 1,
+		  nModified: 0,
+		  ok: 1
+		};
+
+		const dummyRecipes = [];
+	    
+	    verifyStub.resolves(dummyTicket);
+		uploadStub.resolves({"secure_url": "https://test.com/"});
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.updateRecipe = sinon.stub().returns(goodUpdate);
+		await handler.handleUpdateRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", "https://test.com/", "testRecipeToUpdate");
+		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
+	  });
+
+      it('should update the recipe for a URL-based upload', async() => {
+		let options = {
+		  "body": {
+			email: process.env.ADMIN_ONE,
+			recipeName: "testRecipeToUpdate",
+			data: "{new data}",
+			preview: "https://img.com/12345"
+		  },
+		};
+
+		const goodUpdate = {
+		  n: 1,
+		  nModified: 0,
+		  ok: 1
+		};
+
+		const dummyRecipes = [];
+	    
+	    verifyStub.resolves(dummyTicket);
+		let res = mockResponse();
+		let req = mockRequest(options);
+		databaseSpy.updateRecipe = sinon.stub().returns(goodUpdate);
+		await handler.handleUpdateRecipe(req, res);
+		chai.expect(res.status).to.have.been.calledWith(200);
+		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", "https://img.com/12345", "testRecipeToUpdate");
 		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
 	  });
 	});

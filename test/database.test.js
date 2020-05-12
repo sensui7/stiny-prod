@@ -108,9 +108,23 @@ describe('Database Tests', () => {
 
 	// Returns { n: 1, nModified: 0, ok: 1 } for example 
 	it('should update a recipe', async() => {
-	  const testResult = await database.updateRecipe("Steak", "{no sauce}");
+	  const testResult = await database.updateRecipe("Steak", "{no sauce}", "https://test.com/", "Steak");
 	  const allRecipes = await database.getAllRecipes(); 
 	  assert.equal(allRecipes[0].data, "{no sauce}");
 	  assert.equal(testResult.ok, 1);
+	}
+	);
+	it('should update a recipe with new preview image url and name', async() => {
+	  const testResult = await database.updateRecipe("Steak", "{no sauce}", "https://photo.com/12345", "Steak Upgraded");
+	  const allRecipes = await database.getAllRecipes(); 
+	  assert.equal(allRecipes[0].name, "Steak Upgraded");
+	  assert.equal(allRecipes[0].preview, "https://photo.com/12345");
+	  assert.equal(testResult.ok, 1);
+	});
+
+	it('should add a recipe with a preview photo', async() => {
+	  await database.addRecipe("Carmelized Apples", "{}", "https://photo.com/12345");
+	  const find = await database.getRecipe("Carmelized Apples");
+	  assert.equal(find[0].preview, "https://photo.com/12345");
 	});
 });

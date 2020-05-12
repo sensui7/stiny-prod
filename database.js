@@ -17,7 +17,8 @@ const albumSchema = new Schema ({
 
 const recipeSchema = new Schema ({
   data: {type: String, required: true},
-  name: {type: String, required: true, unique: true}
+  name: {type: String, required: true, unique: true},
+  preview: {type: String}
 });
 
 albumSchema.plugin(uniqueValidator);
@@ -145,10 +146,15 @@ async function getAlbumList() {
   return albumList.map(item => item.name);
 }
 
-async function addRecipe(name, data) {
+async function addRecipe(name, data, preview) {
+  if (preview === undefined) {
+	preview = "";
+  }
+
   const recipe = Recipe({
     data: data,
-	name: name
+	name: name,
+	preview: preview
   });
 
   await recipe.save(async (err, res) => {
@@ -164,7 +170,8 @@ async function getAllRecipes() {
   return recipes.map(item => {
 	return {
 	  name: item.name,
-	  data: item.data
+	  data: item.data,
+	  preview: item.preview
 	};
   });
 }
@@ -187,9 +194,19 @@ async function deleteRecipe(recipeName) {
   });
 }
 
-async function updateRecipe(recipeName, newData) {
+async function updateRecipe(recipeName, newData, preview, newName) {
+  if (preview === null || preview === undefined) {
+    return await Recipe.updateOne({ name: recipeName }, 
+		  						{ $set: { name: newName, data: newData}}, 
+		  						(err) => {
+      if (err) {
+	    throw err;
+	  }
+    });
+  }
+
   return await Recipe.updateOne({ name: recipeName }, 
-		  						{ $set: { data: newData }}, 
+		  						{ $set: { name: newName, data: newData, preview: preview }}, 
 		  						(err) => {
     if (err) {
 	  throw err;
