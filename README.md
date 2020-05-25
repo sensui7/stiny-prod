@@ -4,7 +4,7 @@ Personal website for my girlfriend Ciny and me! We take a lot of photos and do a
 *Still a work in progress; some features left to do below:*
 - ~~Google Refresh Token & Keep Logged In~~
 - Removing many photos at once
-- Editing name & preview photo for recipe
+- ~~Editing name & preview photo for recipe~~
 - Categorizing recipes (change UI / flexibility)
 - Consistent progress bar design for all operations with the backend
 
