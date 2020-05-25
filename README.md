@@ -7,6 +7,7 @@ Personal website for my girlfriend Ciny and me! We take a lot of photos and do a
 - ~~Editing name & preview photo for recipe~~
 - Categorizing recipes (change UI / flexibility)
 - Consistent progress bar design for all operations with the backend
+- Arrows and easy to navigate photo carousel (more needed)
 
 # Instructions
 To run this locally, execute in order:
