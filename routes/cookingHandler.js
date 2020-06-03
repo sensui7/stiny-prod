@@ -34,7 +34,7 @@ async function handleAddRecipe(req, res) {
 
 	// Means URL is referenced or no file uploaded at all
 	if (file === undefined) {
-	  await database.addRecipe(req.body.recipeName, req.body.data, req.body.preview);
+	  await database.addRecipe(req.body.recipeName, req.body.data, req.body.preview, req.body.tag);
 	  res.status(200).end();
 	  return;
 	}
@@ -54,7 +54,7 @@ async function handleAddRecipe(req, res) {
 	await result.then(async resolve => {
 	  const secure_url = resolve;
 	  
-	  await database.addRecipe(req.body.recipeName, req.body.data, secure_url);
+	  await database.addRecipe(req.body.recipeName, req.body.data, secure_url, req.body.tag);
 	  res.status(200).end();
 	}, err => {
       res.status(500).end();	
@@ -108,6 +108,7 @@ async function handleUpdateRecipe(req, res) {
 	const recipeName = req.body.recipeName;
 	const preview = req.body.preview;
 	const newData = req.body.data;
+	const tag = req.body.tag;
 	const file = req.file;
 
 	// If new name not specified, assume old name to update
@@ -117,8 +118,8 @@ async function handleUpdateRecipe(req, res) {
 
 
 	if (file === undefined) {
-	  const result = (preview === undefined || preview === null) ? await database.updateRecipe(recipeName, newData, undefined, newName)
-			  												     : await database.updateRecipe(recipeName, newData, preview, newName);
+	  const result = (preview === undefined || preview === null) ? await database.updateRecipe(recipeName, newData, undefined, newName, tag)
+			  												     : await database.updateRecipe(recipeName, newData, preview, newName, tag);
 
 	  // Update did not occur
 	  if (result === undefined || result.ok === 0) {
@@ -146,7 +147,7 @@ async function handleUpdateRecipe(req, res) {
 	await result.then(async resolve => {
 	  const secure_url = resolve;
 	  
-	  const result = await database.updateRecipe(recipeName, newData, secure_url, newName);
+	  const result = await database.updateRecipe(recipeName, newData, secure_url, newName, tag);
 	  // Update did not occur
 	  if (result === undefined || result.ok === 0) {
 	    res.status(500).end();

@@ -78,7 +78,8 @@ describe("CookingHandler", () => {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipe",
 			data: "{}",
-			preview: "https://photo.com/12345"
+			preview: "https://photo.com/12345",
+			tag: "Breakfast"
 		  }
 		};
 	    
@@ -89,7 +90,7 @@ describe("CookingHandler", () => {
 		databaseSpy.addRecipe = sinon.spy();
 		await handler.handleAddRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
-		chai.expect(databaseSpy.addRecipe).calledWith("testRecipe", "{}", "https://photo.com/12345");
+		chai.expect(databaseSpy.addRecipe).calledWith("testRecipe", "{}", "https://photo.com/12345", "Breakfast");
 		chai.expect(databaseSpy.addRecipe).to.have.callCount(1);
 		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
 	  });
@@ -100,7 +101,8 @@ describe("CookingHandler", () => {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipe",
 			data: "{}",
-			preview: "https://photo.com/12345"
+			preview: "https://photo.com/12345",
+			tag: "Breakfast"
 		  }
 		};
 
@@ -123,6 +125,7 @@ describe("CookingHandler", () => {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipe",
 			data: "{}",
+			tag: "Breakfast"
 		  },
 		  "file": {
 			originalname: "testFile"
@@ -137,7 +140,7 @@ describe("CookingHandler", () => {
 		databaseSpy.addRecipe = sinon.spy();
 		await handler.handleAddRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
-		chai.expect(databaseSpy.addRecipe).calledWith("testRecipe", "{}", "https://test.com/");
+		chai.expect(databaseSpy.addRecipe).calledWith("testRecipe", "{}", "https://test.com/", "Breakfast");
 		chai.expect(databaseSpy.addRecipe).to.have.callCount(1);
 		chai.expect(databaseSpy.getRecipe).to.have.callCount(1);
 	  });
@@ -283,7 +286,8 @@ describe("CookingHandler", () => {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipeToUpdate",
 			newName: "newRecipe",
-			data: "{new data}"
+			data: "{new data}",
+			tag: "Dinner"
 		  }
 		};
 
@@ -302,7 +306,7 @@ describe("CookingHandler", () => {
 		await handler.handleUpdateRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
 		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
-		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", undefined, "newRecipe");
+		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", undefined, "newRecipe", "Dinner");
 	  });
 
       it('should not update the recipe', async() => {
@@ -336,7 +340,8 @@ describe("CookingHandler", () => {
 		  "body": {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipeToUpdate",
-			data: "{new data}"
+			data: "{new data}",
+			tag: "Dinner"
 		  },
 		  "file": {
 		    originalname: "testFile"
@@ -358,7 +363,7 @@ describe("CookingHandler", () => {
 		databaseSpy.updateRecipe = sinon.stub().returns(goodUpdate);
 		await handler.handleUpdateRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
-		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", "https://test.com/", "testRecipeToUpdate");
+		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", "https://test.com/", "testRecipeToUpdate", "Dinner");
 		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
 	  });
 
@@ -368,7 +373,8 @@ describe("CookingHandler", () => {
 			email: process.env.ADMIN_ONE,
 			recipeName: "testRecipeToUpdate",
 			data: "{new data}",
-			preview: "https://img.com/12345"
+			preview: "https://img.com/12345",
+			tag: "Breakfast"
 		  },
 		};
 
@@ -386,7 +392,7 @@ describe("CookingHandler", () => {
 		databaseSpy.updateRecipe = sinon.stub().returns(goodUpdate);
 		await handler.handleUpdateRecipe(req, res);
 		chai.expect(res.status).to.have.been.calledWith(200);
-		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", "https://img.com/12345", "testRecipeToUpdate");
+		chai.expect(databaseSpy.updateRecipe).calledWith("testRecipeToUpdate", "{new data}", "https://img.com/12345", "testRecipeToUpdate", "Breakfast");
 		chai.expect(databaseSpy.updateRecipe).to.have.callCount(1);
 	  });
 	});
