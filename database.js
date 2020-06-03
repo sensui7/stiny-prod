@@ -199,13 +199,23 @@ async function deleteRecipe(recipeName) {
 
 async function updateRecipe(recipeName, newData, preview, newName, newTag) {
   if (preview === null || preview === undefined) {
-    return await Recipe.updateOne({ name: recipeName }, 
-		  						{ $set: { name: newName, data: newData}}, 
+	if (newTag === null || newTag === undefined) {
+      return await Recipe.updateOne({ name: recipeName }, 
+		  						{ $set: { name: newName, data: newData }}, 
 		  						(err) => {
-      if (err) {
-	    throw err;
-	  }
-    });
+        if (err) {
+	      throw err;
+	    }
+      });
+	} else {
+      return await Recipe.updateOne({ name: recipeName }, 
+		  						{ $set: { name: newName, data: newData, tag: newTag}}, 
+		  						(err) => {
+        if (err) {
+	      throw err;
+	    }
+      });
+	}
   }
 
   return await Recipe.updateOne({ name: recipeName }, 
