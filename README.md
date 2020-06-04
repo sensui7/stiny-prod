@@ -14,6 +14,12 @@ To run this locally, execute in order:
 - `npm install` to install the dependencies
 - `npm start` to run the start script
 
+# Backup
+- [Snapshot Error](https://stackoverflow.com/questions/56656925/mongoexport-error-failed-failed-to-parse-unrecognized-field-snapshot)
+  - Versioning issue; simply use the force table scan flag (scans without usage of id for collections)
+- `mongoexport --forceTableScan --host <clusters> --ssl --username admin --password <password> --collection <collection_name> --out <output file name and extension>`
+
+
 # Technologies
 This project was built with tools/frameworks etc.
 - `CircleCI`
