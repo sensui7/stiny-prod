@@ -18,6 +18,7 @@ To run this locally, execute in order:
 - [Snapshot Error](https://stackoverflow.com/questions/56656925/mongoexport-error-failed-failed-to-parse-unrecognized-field-snapshot)
   - Versioning issue; simply use the force table scan flag (scans without usage of id for collections)
 - `mongoexport --forceTableScan --host <clusters> --ssl --username admin --password <password> --collection <collection_name> --out <output file name and extension>`
+  - Checkout command-line tools for reference on MongoDB Atlas
 
 
 # Technologies
